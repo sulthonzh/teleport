@@ -1,10 +1,11 @@
 package teleport
 
 import (
-	"github.com/henrylee2cn/teleport/debug"
 	"log"
 	"net"
 	"time"
+
+	"github.com/sulthonzh/transmit/debug"
 )
 
 // 客户端专有成员
