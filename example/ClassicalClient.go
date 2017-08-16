@@ -2,7 +2,7 @@ package models
 
 import (
 	"fmt"
-	"github.com/henrylee2cn/teleport"
+	"github.com/sulthonzh/transmit"
 	"log"
 	"sync"
 	"time"
@@ -11,7 +11,7 @@ import (
 // 仅请求一次并返回数据
 func RequestOnce(body interface{}, operation string, flag string, nodeuid ...string) (interface{}, bool) {
 	m := hubConns.getOne()
-	m.Teleport.Request(body, operation, flag, nodeuid...)
+	m.transmit.Request(body, operation, flag, nodeuid...)
 	r := <-m.result
 	hubConns.free(m)
 	return r[0], r[1].(bool)
@@ -24,7 +24,7 @@ func GetManage() *Manage {
 
 // 请求并返回数据，须配合 GetManage()与FreeManage(）一起使用
 func (self *Manage) Request(body interface{}, operation string, flag string, nodeuid ...string) (interface{}, bool) {
-	self.Teleport.Request(body, operation, flag, nodeuid...)
+	self.transmit.Request(body, operation, flag, nodeuid...)
 	r := <-self.result
 	return r[0], r[1].(bool)
 }
@@ -45,7 +45,7 @@ func ResetManage() {
 }
 
 type Manage struct {
-	teleport.Teleport
+	transmit.Teleport
 	result chan [2]interface{}
 }
 
@@ -60,7 +60,7 @@ const (
 // 新建连接
 func newManage() *Manage {
 	m := &Manage{
-		Teleport: teleport.New(),
+		Teleport: transmit.New(),
 		result:   make(chan [2]interface{}, 1),
 	}
 	uid := M_WEB + ":" + fmt.Sprint(time.Now().Unix())
@@ -132,8 +132,8 @@ func (self *hubPool) increment() {
 	}
 }
 
-func newManageApi(m *Manage) teleport.API {
-	return teleport.API{
+func newManageApi(m *Manage) transmit.API {
+	return transmit.API{
 		// 获取数据
 		"get": &result{m},
 		// 获取table的清单
@@ -146,8 +146,8 @@ type result struct {
 	*Manage
 }
 
-func (self *result) Process(receive *teleport.NetData) *teleport.NetData {
-	if receive.Status != teleport.SUCCESS {
+func (self *result) Process(receive *transmit.NetData) *transmit.NetData {
+	if receive.Status != transmit.SUCCESS {
 		log.Printf("error: %v，%v", receive.Body, receive.Status)
 		self.result <- [2]interface{}{receive.Body, false}
 		return nil

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/henrylee2cn/teleport"
-	"github.com/henrylee2cn/teleport/debug"
+	"github.com/sulthonzh/transmit"
+	"github.com/sulthonzh/transmit/debug"
 	"log"
 	// "time"
 )
@@ -11,7 +11,7 @@ import (
 func main() {
 	// 开启Teleport错误日志调试
 	debug.Debug = true
-	tp := teleport.New().SetUID("C3", "abc").SetAPI(teleport.API{
+	tp := transmit.New().SetUID("C3", "abc").SetAPI(transmit.API{
 		"报到": new(报到),
 	})
 	tp.Client("127.0.0.1", ":20125")
@@ -20,8 +20,8 @@ func main() {
 
 type 报到 struct{}
 
-func (*报到) Process(receive *teleport.NetData) *teleport.NetData {
-	if receive.Status == teleport.SUCCESS {
+func (*报到) Process(receive *transmit.NetData) *transmit.NetData {
+	if receive.Status == transmit.SUCCESS {
 		log.Printf("%v", receive.Body)
 	}
 	return nil
