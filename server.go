@@ -1,4 +1,4 @@
-package teleport
+package transmit
 
 import (
 	"encoding/json"
